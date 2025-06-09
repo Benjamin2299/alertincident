@@ -1,27 +1,29 @@
 package com.alertincident.incident_service.model;
 
+/**
+ * Représente une localisation géographique par latitude et longitude.
+ * Utilisée pour associer les coordonnées de l'utilisateur à un incident.
+ */
 public class DeviceLocation {
+
     private Double latitude;
     private Double longitude;
 
-    // Constructeur
     public DeviceLocation(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    // Getters
     public Double getLatitude() {
         return latitude;
     }
 
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    // Optionnel : Ajoutez des setters si nécessaire
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
     }
 
     public void setLongitude(Double longitude) {

@@ -9,37 +9,39 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class ImageStorageService {
 
     private final ImageRepository imageRepository;
 
-    private static final String UPLOAD_DIR = "uploads/";
+    private static final String UPLOAD_DIR = "uploads/"; // Répertoire de stockage
 
     @Autowired
     public ImageStorageService(ImageRepository imageRepository) {
         this.imageRepository = imageRepository;
     }
 
+    // Enregistre une image sur le disque et en base
     public Image saveImage(MultipartFile file) {
         try {
-            // Créer le dossier uploads s’il n’existe pas
             File uploadDir = new File(UPLOAD_DIR);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
 
-            // Définir le chemin du fichier
-            String filePath = UPLOAD_DIR + file.getOriginalFilename();
-            File destFile = new File(filePath);
+            // Générer un nom unique pour éviter les conflits
+            String uniqueName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9.\\-_]", "_");
+            String filePath = UPLOAD_DIR + uniqueName;
 
-            // Sauvegarder le fichier sur le disque
+            // Sauvegarder physiquement le fichier
+            File destFile = new File(filePath);
             file.transferTo(destFile);
 
-            // Enregistrer l’image en base de données
+            // Sauvegarder les métadonnées en base
             Image image = new Image();
-            image.setFilePath(filePath); // ou "/uploads/" + file.getOriginalFilename()
+            image.setFilePath(filePath);
             image.setUploadDate(LocalDateTime.now());
 
             return imageRepository.save(image);

@@ -8,21 +8,34 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class IncidentService {
+
     private final IncidentRepository incidentRepository;
     private final ImageStorageService imageStorageService;
 
     @Autowired
-    public IncidentService(IncidentRepository incidentRepository, 
-                         ImageStorageService imageStorageService) {
+    public IncidentService(IncidentRepository incidentRepository,
+                           ImageStorageService imageStorageService) {
         this.incidentRepository = incidentRepository;
         this.imageStorageService = imageStorageService;
     }
 
     public Incident reportIncident(Incident incident, MultipartFile imageFile) {
+
+        // Utiliser la localisation de l'utilisateur si latitude ou longitude est manquante
+        if (incident.getDeviceLocation() != null) {
+            if (incident.getLatitude() == null || incident.getLongitude() == null) {
+                incident.updateFromDeviceLocation();
+            }
+        }
+
+        // Enregistrer l’image si fournie
         if (imageFile != null && !imageFile.isEmpty()) {
             incident.setImage(imageStorageService.saveImage(imageFile));
         }
-        incident.setStatus("PENDING");
+
+        // Statut initial par défaut
+        incident.setStatus("en attente");
+
         return incidentRepository.save(incident);
     }
 }

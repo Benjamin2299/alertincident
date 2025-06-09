@@ -1,5 +1,6 @@
 package com.alertincident.incident_service.repository;
 
+// Repository pour l'entité Incident avec méthode personnalisée de recherche par statut
 
 import com.alertincident.incident_service.model.Incident;
 import org.springframework.data.jpa.repository.JpaRepository;

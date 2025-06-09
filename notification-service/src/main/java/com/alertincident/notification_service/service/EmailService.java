@@ -13,11 +13,10 @@ public class EmailService {
 
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("bwadikabeugnare@gmail.com"); // doit être le même que dans application.properties
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);
+        message.setFrom("bwadikabeugnare@gmail.com"); // à adapter selon ta config
         mailSender.send(message);
     }
 }
-

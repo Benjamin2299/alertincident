@@ -8,36 +8,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/incidents")
 public class IncidentController {
+
     private final IncidentService incidentService;
-    private final IncidentRepository incidentRepository; // Ajout du repository manquant
+    private final IncidentRepository incidentRepository;
 
     @Autowired
-    public IncidentController(IncidentService incidentService, 
-                            IncidentRepository incidentRepository) {
+    public IncidentController(IncidentService incidentService,
+                              IncidentRepository incidentRepository) {
         this.incidentService = incidentService;
         this.incidentRepository = incidentRepository;
     }
 
+    // Création d’un incident
     @PostMapping
-    public ResponseEntity<Incident> createIncident(
+public ResponseEntity<Incident> createIncident(
         @RequestBody Incident incident,
         @RequestHeader("X-Device-Latitude") Double latitude,
         @RequestHeader("X-Device-Longitude") Double longitude) {
-    
-        // 1. Récupérer la position
-        DeviceLocation location = new DeviceLocation(latitude, longitude);
-        incident.setDeviceLocation(location);
-    
-        // 2. Mapper vers les champs persistants
-        incident.setLatitude(location.getLatitude());
-        incident.setLongitude(location.getLongitude());
-    
-        // 3. Sauvegarder
-        Incident savedIncident = incidentRepository.save(incident);
-    
-        return ResponseEntity.ok(savedIncident);
+
+    DeviceLocation location = new DeviceLocation(latitude, longitude);
+    incident.setDeviceLocation(location);
+
+    // Appel de la logique métier
+    Incident savedIncident = incidentService.reportIncident(incident, null); // si pas d’image
+
+    return ResponseEntity.ok(savedIncident);
+}
+
+
+    // Tous les incidents
+    @GetMapping
+    public List<Incident> getAllIncidents() {
+        return incidentRepository.findAll();
+    }
+
+    // Incidents par statut
+    @GetMapping("/status/{status}")
+    public List<Incident> getIncidentsByStatus(@PathVariable String status) {
+        return incidentRepository.findByStatus(status.toUpperCase());
     }
 }

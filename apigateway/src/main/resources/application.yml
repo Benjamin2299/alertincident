@@ -1,5 +1,6 @@
 server:
-  port: 8080  # Port du Gateway
+  address: 0.0.0.0       # Écoute sur toutes les interfaces réseau
+  port: 8080             # Port du Gateway
 
 spring:
   application:
